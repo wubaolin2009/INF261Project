@@ -1,0 +1,26 @@
+{
+  "name": "INF261",
+  "version": "0.1",
+  "description": "Gmail end-to-end encryption alpha plugin for chrome",
+  "permissions": [
+    "storage"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["https://mail.google.com/*"],
+      "js": ["content.js", "encrypt_process.js"]
+    }
+  ],
+  "web_accessible_resources": [
+    "jquery-1.10.2.min.js",
+    "gmail.js",
+    "main.js",
+    "encrypt_process.js",
+    "bootstrap-switch.min.js",
+    "/libs/sjcl/sjcl.js",
+    "/libs/sjcl/core/*.js",
+    "/libs/sjcl/compress/*.js",
+    "bootstrap-switch.min.css"
+  ],
+  "manifest_version": 2
+}
