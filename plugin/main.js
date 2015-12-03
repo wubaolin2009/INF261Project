@@ -1,7 +1,7 @@
 var gmail;
 mapComposerIdToEncryptionOnOff = new Array();
 var gDefaultEnabled = false;
-var gEncryptMode = 0; // 0, store in server, 1 password, 2 p2p
+var gEncryptMode =1; // 0, store in server, 1 password, 2 p2p
 var gDelAfterRead = 0; // only valid when gEncryptMode == 0
 var gDelTime = 0;  // for demo purpose,
 
@@ -21,6 +21,17 @@ function genSwitchForEncryption(name, size, checked) {
     html = html + "checked ";
   }
   html = html + " size=\"" + size + "\">";
+  // add read-then-del
+  if(gDelAfterRead) {
+    html = html + "<div class='checkbox'>";
+    html += "<label><input type='checkbox' value=''>Del After Read?</label>";
+    html += "</div>";
+  }
+  // add expire after minutes
+  if(gDelTime > 0) {
+    html = html + "<br><label for='enc261_deltime_input'>Del After:</label>";
+    html += "<input type='text' id='enc261_deltime_input'>s</input>";
+  }
   return html;
 }
 // Insert a switch to composer, this happens when gmail loaded and a new composer poped up
@@ -75,6 +86,7 @@ function tryDecryptEmail(domEmail, emailId, callback) {
     }
   });
 }
+
 function checkEmailEncrypted(email) {
   // email is a DOM object
   var body = email.body();
@@ -87,7 +99,8 @@ function checkEmailEncrypted(email) {
   var func = body.find("input[name='enc261_funcName']").val();
   if(func == "encStoreInServer") { // the thing is encrypted in client and stored in server using publickey encryption
     var emailId = body.find("input[name='enc261_emailId']").val();
-    tryDecryptEmail(email, emailId);
+    // generate a UI
+    genHTMLDefault(email, emailId);
   } else if(func == "grantAccess") { // some others are requesting u to give them access to an email
     var emailId = body.find("input[name='enc261_emailId']").val();
     var fromUser = body.find("input[name='enc261_fromUser']").val();
@@ -140,33 +153,14 @@ function checkEmailEncrypted(email) {
   else if(func == "encPwd") {
     // add something into this email
     var uiPwd = "<input name='enc261_pwd_input' value='Input Password'>password</input><button id='enc261_pwd_button'>Decrypt it!</button><br>";
-    email.body(uiPwd + email.body());
-    $("#enc261_pwd_button").click(function(event) {
-      var password = $("input[name='enc261_pwd_input']").val();
-      // decrypt the email
-      var correct = true;
-      try {
-        var dom = $(email.body());
-        var text = dom.find("input[name='enc261_encText']")[0].value;
-        text = decodeURIComponent(text);
-        text = sjcl.decrypt(password, text);
-        var subject = dom.find("input[name='enc261_subject']")[0].value;
-        subject = decodeURIComponent(subject);
-        text = "<div>subject is:<br>" + "<h3>" + sjcl.decrypt(password, subject) +"</h3></div>" + text;
-        email.body(text);
-      } catch(err) {
-        correct = false;
-      }
-      if (!correct) {
-        alert("password error!");
-      }
-    });
+    genHTMLPWDShown(email);
+    //email.body(uiPwd + email.body());
   }
   else if(func == "encP2P") {
     var myEmail = gmail.get.user_email();
-    if(!confirm("This email is encrypted P2P, do you want to decrypt it?")) {
+    /*if(!confirm("This email is encrypted P2P, do you want to decrypt it?")) {
       return;
-    }
+    }*/
     // find the key
     var key = "enc261_p2p_" + myEmail + "_key";
     var encryptedKey = body.find("input[name='" + key + "']")[0].value;
@@ -176,12 +170,12 @@ function checkEmailEncrypted(email) {
     var encryptedText = body.find("input[name='enc261_p2p_enctext']")[0].value;
     encryptedText = decodeURIComponent(encryptedText);
     var realText = sjcl.decrypt(decryptedKey, encryptedText);
-
     var subject = body.find("input[name='enc261_subject']")[0].value;
     subject = decodeURIComponent(subject);
-    realText = "<div>subject is:<br>" + "<h3>" + sjcl.decrypt(decryptedKey, subject) +"</h3></div>" + realText;
-
-    email.body(realText);
+    //realText = "<div>subject is:<br>" + "<h3>" +  +"</h3></div>" + realText;
+    subject = sjcl.decrypt(decryptedKey, subject);
+    genHTMLP2P(email, subject, realText);
+    return;
   } else if(func == "encDelAfterRead") { // must be stored in server actually, not pwd, and not p2p
 
   }

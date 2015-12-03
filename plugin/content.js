@@ -31,7 +31,25 @@ var b = document.createElement('script');
 b.src = chrome.extension.getURL('bootstrap-switch.min.js');
 (document.head || document.documentElement).appendChild(b);
 
+var qr = document.createElement('script');
+qr.src = chrome.extension.getURL('jquery.qrcode.min.js');
+(document.head || document.documentElement).appendChild(qr);
+
 var bb = document.createElement('link');
 bb.href = chrome.extension.getURL('bootstrap-switch.min.css');
 bb.rel="stylesheet";
 (document.head || document.documentElement).appendChild(bb);
+
+var htmlgen = document.createElement('script');
+htmlgen.src = chrome.extension.getURL('HTMLGen.js');
+(document.head || document.documentElement).appendChild(htmlgen);
+
+/** Bootstrap Libraries **/
+var bootlib = document.createElement('script');
+bootlib.src = chrome.extension.getURL('/js/bootstrap.min.js');
+(document.head || document.documentElement).appendChild(bootlib);
+
+var bootcss = document.createElement('link');
+bootcss.href = chrome.extension.getURL('/css/bootstrap.min.css');
+bootcss.rel="stylesheet";
+(document.head || document.documentElement).appendChild(bootcss);

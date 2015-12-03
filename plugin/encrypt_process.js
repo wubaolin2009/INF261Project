@@ -28,7 +28,7 @@
  http://52.25.168.169:8888/getEmail?emailId=emailid1&userName=otheremail
  * @type {string}
  */
-var ServerAddress = "https://52.25.168.169:8888";
+var ServerAddress = "https://52.27.236.62:8888";
 
 function generateEncryptedEmail(emailId, fromUser, subject) {
     var html = "||||Dear|||| You recieved an email from " + fromUser + " ";
@@ -40,6 +40,7 @@ function generateEncryptedEmail(emailId, fromUser, subject) {
         html += "<input type=\"hidden\" name=\"enc261_timed\" value=\""+ "" + "\"/>";
     }
     html += "<input type=\"hidden\" name=\"enc261_funcName\" value=\""+ "encStoreInServer" + "\"/>" + "<input type=\"hidden\" name=\"enc261_emailId\" value=\""+emailId + "\"/>" +"</div>";
+    html += "<div id='qrcode'></div>";
     console.log("WBL: HTML:", html);
     return html;
 }
@@ -258,7 +259,8 @@ function getEmail(userEmail, emailId, emailSender, callback) {
             var decrypteSubject = sjcl.decrypt(decryptKey, data.keys.subject);
 
             console.log("The email decrypted is: " + decrypteEmail);
-            callback(null, "<div>Subject is:<h3>" + decrypteSubject + "</h3><br></div>" + decrypteEmail);
+            callback(null, getHTMLDecrypted(decrypteSubject, decrypteEmail));
+            //callback(null, "<div>Subject is:<h3>" + decrypteSubject + "</h3><br></div>" + decrypteEmail);
         }
     });
 

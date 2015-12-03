@@ -1,0 +1,20 @@
+wc.body("<div class='panel panel-default'> \
+    <div id='enc261_header' class='panel-heading'> \
+        Dear User: \
+    </div> \
+    <div id='enc261_body' class='panel-body'> \
+        <h4> \
+            You got an encrypted email from baolinw@uci.edu. \
+        </h4> \
+        <p>You can click the button to decrypt it. Or use your mobile device to scan the QR code below. </p> \
+        <button type='button' class='btn btn-primary'>Decrypt It!</button> \
+        <br> \
+    </div> \
+    <div class='panel-footer'> \
+        <div id='qrcode'> \
+        </div> \
+    </div> \
+</div>");
+
+
+$('#qrcode').qrcode({width: 128,height: 128,text: "size doesn't matter"})
